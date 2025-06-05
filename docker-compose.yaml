@@ -1,0 +1,14 @@
+services:
+  bitcoind:
+    image: lncm/bitcoind:v27.0
+    container_name: bitcoind
+    ports:
+      - "18443:18443"
+    volumes:
+      - ./bitcoin-data:/data/.bitcoin
+      - ./bitcoin.conf:/data/.bitcoin/bitcoin.conf:ro
+    healthcheck:
+      test: ["CMD", "bitcoin-cli", "-regtest", "getblockchaininfo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
