@@ -1,6 +1,6 @@
 import BitcoinCore from "bitcoin-core";
 
-interface BitcoinCoreConfig {
+export interface BitcoinCoreConfig {
     network?: string,
     username?: string,
     password?: string,
@@ -18,12 +18,22 @@ export class BitcoinCoreService {
             network: clientConfig.network || "regtest",
             username: clientConfig.username || "abhishek",
             password: clientConfig.password || "abhishek",
-            host: clientConfig.host || "localhost",
-            port: clientConfig.port || 18443
+            port: clientConfig.port || 18443,
+            host: clientConfig.host || "localhost"
         }
 
         this.client = new BitcoinCore(this.clientConfig)
     }
 
-    
+    public async checkConnection(){
+        try {
+            const blockchainInfo = await this.client.command("getblockchaininfo")
+            return blockchainInfo
+
+        } catch (error) {
+            console.log("error",error)  
+        }
+
+    }
 }
+
