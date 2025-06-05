@@ -8,6 +8,17 @@ export interface BitcoinCoreConfig {
     host?: string
 }
 
+export interface walletConfig {
+    wallet_name: string,
+    disabled_private_keys?: boolean,
+    black?: boolean,
+    passphrase?: string,
+    avoid_reuse?: boolean,
+    descriptors: boolean,
+    load_on_start?:boolean,
+    external_signer?: boolean
+}
+
 
 export class BitcoinCoreService {
     private client: BitcoinCore
@@ -33,7 +44,26 @@ export class BitcoinCoreService {
         } catch (error) {
             console.log("error",error)  
         }
+    }
 
+    public async listWallets(){
+        try {
+            const walletList = await this.client.command("listwallets")
+            return walletList
+        } catch (error) {
+            console.log('error',error) 
+        }
+    }
+
+    public async createWallet(walletConfig: walletConfig){
+        try {
+            const wallet = await this.client.command("createwallet", [walletConfig.wallet_name,walletConfig.disabled_private_keys,walletConfig.black,walletConfig.passphrase,walletConfig.avoid_reuse,walletConfig.descriptors])
+            return wallet
+            
+        } catch (error) {
+            console.log("error",error)
+            
+        }
     }
 }
 
