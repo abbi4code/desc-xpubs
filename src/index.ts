@@ -32,13 +32,16 @@ async function runProgram(){
     
     if (allWallets && allWallets.includes("abhishek")) {
         const walletInfo = await client.getWalletInfo("abhishek");
-        console.log("Wallet info for abhishek:", walletInfo);
+        console.log("Wallet info for abhishek:", walletInfo.balance);
     } else {
         console.log("Wallet 'abhishek' not found");
     }
 
-    const loadwallet = await client.loadWallet("abhishek123.dat")
-    console.log("loadwallet",loadwallet)
+    // const loadwallet = await client.loadWallet("abhishek123.dat")
+    // console.log("loadwallet",loadwallet)
+
+    const walletBalance = await client.getBalance("abhishek")
+    console.log("balance",walletBalance)
 }
 
 runProgram().catch(error => {

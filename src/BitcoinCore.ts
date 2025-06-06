@@ -24,6 +24,7 @@ export interface walletConfig {
 export class BitcoinCoreService {
     private client: BitcoinCore
     private clientConfig: BitcoinCoreConfig
+    private walletClients: Map<string,BitcoinCore> = new Map()
 
     constructor(clientConfig: BitcoinCoreConfig){
         this.clientConfig = {
@@ -35,6 +36,18 @@ export class BitcoinCoreService {
         }
 
         this.client = new BitcoinCore(this.clientConfig)
+    }
+
+    private getWalletInstance(walletName: string){
+        if(!this.walletClients.has(walletName)){
+            const walletClient = new BitcoinCore({
+                ...this.clientConfig,
+                wallet: walletName
+            })
+            this.walletClients.set(walletName,walletClient)
+        }
+
+        return this.walletClients.get(walletName)
     }
 
     public async checkConnection(){
@@ -91,19 +104,24 @@ export class BitcoinCoreService {
 
     public async getWalletInfo(walletName: string){
         try {
-            const walletClient = new BitcoinCore({
-                ...this.clientConfig,
-                wallet: walletName
-            })
+            const walletClient = this.getWalletInstance(walletName)
             // like not this.client.command (bcoz you dont want to limit change main configeach time you create a new wallet right)
-            const walletInfo = await walletClient.command("getwalletinfo")
+            const walletInfo = await walletClient?.command("getwalletinfo")
             return walletInfo
-
-            
         } catch (error) {
             console.log("error",error)    
         }
+    }
 
+    public async getBalance(walletName: string){
+        try {
+            const walletClient = this.getWalletInstance(walletName)
+
+            const balance = await walletClient?.command("getbalance")
+            return balance
+        } catch (error) {
+            console.log("error",error)
+        }
     }
 
 }
