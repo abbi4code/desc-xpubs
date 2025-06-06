@@ -32,7 +32,7 @@ async function runProgram(){
     
     if (allWallets && allWallets.includes("abhishek")) {
         const walletInfo = await client.getWalletInfo("abhishek");
-        console.log("Wallet info for abhishek:", walletInfo.balance);
+        console.log("Wallet info for abhishek:", walletInfo);
     } else {
         console.log("Wallet 'abhishek' not found");
     }
@@ -42,6 +42,28 @@ async function runProgram(){
 
     const walletBalance = await client.getBalance("abhishek")
     console.log("balance",walletBalance)
+
+    const walletdesc = await client.listdescriptors("abhishek")
+    // console.log("walletdesc",walletdesc.descriptors[0])
+
+    const listDescriptor = walletdesc.descriptors
+    // console.log("descLength",listDescriptor)
+
+    let wpkh = []
+    for(let desc of listDescriptor){
+        if(desc.desc.startsWith("sh")){
+            wpkh.push(desc.desc)
+            break;
+        }
+    }
+    const validReg = /^(?<wrapper>\w+)?\(?\b(?<type>\w+)\((?<body>.+)\)\)?#(?<checksum>[a-z0-9]+)$/i;
+
+    // if(wpkh[0].mat)
+
+
+    console.log("all sh(wpkh):", wpkh)
+
+
 }
 
 runProgram().catch(error => {

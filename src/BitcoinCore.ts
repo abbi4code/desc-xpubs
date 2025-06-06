@@ -124,5 +124,16 @@ export class BitcoinCoreService {
         }
     }
 
+    public async listdescriptors(walletName: string){
+        try {
+            const walletClient = this.getWalletInstance(walletName)
+
+            const walletDesc = await walletClient?.command("listdescriptors")
+            return walletDesc
+        } catch (error) {
+            console.log("error",error)
+        }
+    }
+
 }
 
