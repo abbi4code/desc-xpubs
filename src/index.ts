@@ -7,7 +7,7 @@ async function runProgram(){
 
     // await app.runCmds()
     const walletConfig:walletConfig = {
-        wallet_name: "abhishek1",
+        wallet_name: "abhishek123.dat",
         disable_private_keys: false,
         blank: false,
         passphrase: "",
@@ -24,8 +24,21 @@ async function runProgram(){
     });
 
     const res = await client.checkConnection()
-    const wallet = await client.createWallet(walletConfig)
-    console.log("wallet",wallet)
+    // const wallet = await client.createWallet(walletConfig)
+
+    const allWallets = await client.listWallets();
+    console.log("allWallets",allWallets)
+
+    
+    if (allWallets && allWallets.includes("abhishek")) {
+        const walletInfo = await client.getWalletInfo("abhishek");
+        console.log("Wallet info for abhishek:", walletInfo);
+    } else {
+        console.log("Wallet 'abhishek' not found");
+    }
+
+    const loadwallet = await client.loadWallet("abhishek123.dat")
+    console.log("loadwallet",loadwallet)
 }
 
 runProgram().catch(error => {

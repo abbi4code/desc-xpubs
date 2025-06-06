@@ -5,7 +5,8 @@ export interface BitcoinCoreConfig {
     username?: string,
     password?: string,
     port?: number,
-    host?: string
+    host?: string,
+    wallet?: string
 }
 
 export interface walletConfig {
@@ -16,7 +17,7 @@ export interface walletConfig {
     avoid_reuse?: boolean,
     descriptors?: boolean,
     load_on_startup?: boolean,
-    external_signer?: boolean
+    external_signer?: boolean,
 }
 
 
@@ -30,7 +31,7 @@ export class BitcoinCoreService {
             username: clientConfig.username || "abhishek",
             password: clientConfig.password || "abhishek",
             port: clientConfig.port || 18443,
-            host: clientConfig.host || "http://localhost:18443"
+            host: clientConfig.host || "http://localhost:18443",
         }
 
         this.client = new BitcoinCore(this.clientConfig)
@@ -75,5 +76,35 @@ export class BitcoinCoreService {
             throw error;
         }
     }
+
+    public async loadWallet(walletName: string){
+        try {
+            // Use the main client (no wallet targeting) and pass wallet name as parameter
+            const loadWalletInfo = await this.client.command("loadwallet", walletName)
+            return loadWalletInfo
+            
+        } catch (error) {
+            console.log("error",error)
+            throw error;
+        }
+    }
+
+    public async getWalletInfo(walletName: string){
+        try {
+            const walletClient = new BitcoinCore({
+                ...this.clientConfig,
+                wallet: walletName
+            })
+            // like not this.client.command (bcoz you dont want to limit change main configeach time you create a new wallet right)
+            const walletInfo = await walletClient.command("getwalletinfo")
+            return walletInfo
+
+            
+        } catch (error) {
+            console.log("error",error)    
+        }
+
+    }
+
 }
 
