@@ -10,12 +10,12 @@ export interface BitcoinCoreConfig {
 
 export interface walletConfig {
     wallet_name: string,
-    disabled_private_keys?: boolean,
-    black?: boolean,
+    disable_private_keys?: boolean,
+    blank?: boolean,
     passphrase?: string,
     avoid_reuse?: boolean,
-    descriptors: boolean,
-    load_on_start?:boolean,
+    descriptors?: boolean,
+    load_on_startup?: boolean,
     external_signer?: boolean
 }
 
@@ -30,7 +30,7 @@ export class BitcoinCoreService {
             username: clientConfig.username || "abhishek",
             password: clientConfig.password || "abhishek",
             port: clientConfig.port || 18443,
-            host: clientConfig.host || "localhost"
+            host: clientConfig.host || "http://localhost:18443"
         }
 
         this.client = new BitcoinCore(this.clientConfig)
@@ -57,12 +57,22 @@ export class BitcoinCoreService {
 
     public async createWallet(walletConfig: walletConfig){
         try {
-            const wallet = await this.client.command("createwallet", [walletConfig.wallet_name,walletConfig.disabled_private_keys,walletConfig.black,walletConfig.passphrase,walletConfig.avoid_reuse,walletConfig.descriptors])
+            // Try with just the wallet name first
+            const wallet = await this.client.command("createwallet", 
+                walletConfig.wallet_name,
+                walletConfig.disable_private_keys || false,
+                walletConfig.blank || false,
+                walletConfig.passphrase || "",
+                walletConfig.avoid_reuse || false,
+                walletConfig.descriptors || false,
+                walletConfig.load_on_startup || null,
+                walletConfig.external_signer || false
+            )
             return wallet
             
         } catch (error) {
             console.log("error",error)
-            
+            throw error;
         }
     }
 }
